@@ -1,0 +1,15 @@
+{
+  "name": "crc-signin-login-demo",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Standalone third-party website demonstrating login via the Circles /crc-signin iframe.",
+  "scripts": {
+    "dev": "vite --port 5183",
+    "build": "vite build",
+    "preview": "vite preview --port 5183"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0"
+  }
+}

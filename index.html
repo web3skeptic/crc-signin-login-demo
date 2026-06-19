@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Northwind — Login with Circles</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">◆ Northwind</div>
+    <span class="badge">third-party site · login demo</span>
+  </header>
+
+  <main class="wrap">
+    <section class="intro">
+      <h1>Log in with your Circles account</h1>
+      <p>
+        This is a standalone website. To sign you in, it embeds the Circles
+        <code>/crc-signin</code> connector in an <code>&lt;iframe&gt;</code> and waits for it to
+        report a connected address over <code>postMessage</code>. Your passkey and keys never
+        leave the Circles iframe — this site only ever sees your address.
+      </p>
+    </section>
+
+    <!-- Signed-out: show the embedded Circles login connector -->
+    <section id="signed-out" class="login-card">
+      <div class="login-copy">
+        <h2>Sign in</h2>
+        <p>Use the Circles connector on the right. Click <strong>Log in</strong> to authenticate
+          with your device passkey, or <strong>Create account</strong> if you're new.</p>
+        <ul class="hint-list">
+          <li>The connector must be served from a <code>*.gnosis.io</code> host for an existing
+            passkey to be found (passkeys are bound to the <code>gnosis.io</code> domain).</li>
+          <li>This page grants the iframe
+            <code>allow="publickey-credentials-get *; publickey-credentials-create *"</code>,
+            which WebAuthn requires for cross-origin passkey use.</li>
+        </ul>
+
+        <div class="host-row">
+          <label for="host-input">Connector host</label>
+          <input id="host-input" type="text" spellcheck="false" />
+          <button id="host-apply" class="ghost-btn">Reload</button>
+        </div>
+      </div>
+
+      <div class="frame-col">
+        <div class="frame-label">Circles login (iframe)</div>
+        <iframe
+          id="crc-frame"
+          title="Log in with Circles"
+          allow="publickey-credentials-get *; publickey-credentials-create *; clipboard-write"
+        ></iframe>
+      </div>
+    </section>
+
+    <!-- Signed-in: the third-party app's own logged-in view -->
+    <section id="signed-in" class="welcome-card" hidden>
+      <div class="check">✓</div>
+      <h2>You're signed in</h2>
+      <p class="welcome-sub">Northwind now knows your Circles address. It never saw your passkey.</p>
+      <div class="addr-pill">
+        <span class="addr-label">Circles address</span>
+        <code id="addr-value"></code>
+      </div>
+      <button id="logout-btn" class="ghost-btn">Log out</button>
+    </section>
+
+    <section class="log-section">
+      <div class="log-head">
+        <span>postMessage event log</span>
+        <button id="clear-log" class="ghost-btn small">clear</button>
+      </div>
+      <pre id="log"></pre>
+    </section>
+  </main>
+
+  <script type="module" src="/main.js"></script>
+</body>
+</html>
