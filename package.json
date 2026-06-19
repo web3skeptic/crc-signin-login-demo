@@ -3,11 +3,14 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Standalone third-party website demonstrating login via the Circles /crc-signin iframe.",
+  "description": "Standalone third-party website demonstrating login via the Circles /crc-signin iframe, plus profile lookup and ERC-20 Circles transfers.",
   "scripts": {
     "dev": "vite --port 5183",
     "build": "vite build",
     "preview": "vite preview --port 5183"
+  },
+  "dependencies": {
+    "viem": "^2.41.2"
   },
   "devDependencies": {
     "vite": "^6.0.0"

@@ -32,6 +32,33 @@ Override it with `?host=...` or the on-page "Connector host" box.
 Wire format is identical to [`@aboutcircles/miniapp-sdk`](https://www.npmjs.com/package/@aboutcircles/miniapp-sdk),
 so no SDK dependency is required.
 
+## After login: profile + ERC-20 transfer
+
+Once connected, the page demonstrates a full third-party integration:
+
+- **Profile** — loads the connected avatar's Circles profile via
+  `circles_getProfileByAddress`.
+- **ERC-20 balances** — lists the avatar's token balances via
+  `circles_getTokenBalances`, filtered to `isErc20 === true` (ERC-1155 raw Hub
+  tokens are excluded). Pick one to send.
+- **Recipient search** — type a name to search avatars via
+  `circles_searchProfiles` (returns address + avatarType), or paste a raw address.
+- **Transfer** — builds a plain ERC-20 `transfer(address,uint256)` calldata
+  (`circles.js`) and posts it to the connector as `send_transactions`. The
+  connector shows its approval popup and sends it via the user's Safe, then
+  replies `tx_success` / `tx_rejected`.
+
+All RPC reads (profile, search, balances) are **public** and happen directly on
+this site; only the transfer touches the wallet, and only through the iframe. A
+direct ERC-20 wrapper transfer bypasses the Hub, trust graph, and pathfinder — it
+is a standard token move.
+
+> The connected account needs at least one **ERC-20 wrapped** Circles token with a
+> non-zero balance for the transfer to be possible. Wrap some Circles to ERC-20 in
+> the Circles app first if the list is empty.
+
+RPC: `https://rpc.aboutcircles.com/`.
+
 ## Passkeys & origin (important)
 
 WebAuthn passkeys are bound to a **Relying Party ID** = the registrable domain

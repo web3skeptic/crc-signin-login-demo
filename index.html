@@ -57,16 +57,45 @@
       </div>
     </section>
 
-    <!-- Signed-in: the third-party app's own logged-in view -->
-    <section id="signed-in" class="welcome-card" hidden>
-      <div class="check">✓</div>
-      <h2>You're signed in</h2>
-      <p class="welcome-sub">Northwind now knows your Circles address. It never saw your passkey.</p>
-      <div class="addr-pill">
-        <span class="addr-label">Circles address</span>
-        <code id="addr-value"></code>
+    <!-- Signed-in: profile + ERC-20 Circles transfer -->
+    <section id="signed-in" class="app" hidden>
+      <header class="app-head">
+        <div class="profile">
+          <span id="profile-avatar" class="profile-avatar"></span>
+          <span class="profile-meta">
+            <span id="profile-name" class="profile-name">Loading…</span>
+            <code id="profile-addr" class="profile-addr"></code>
+          </span>
+        </div>
+        <button id="logout-btn" class="ghost-btn">Log out</button>
+      </header>
+
+      <div class="cols">
+        <!-- Token picker -->
+        <div class="card">
+          <h3>Your ERC-20 Circles</h3>
+          <p class="card-hint">Only ERC-20 wrapped Circles are listed. Pick one to send.</p>
+          <div id="balance-list" class="balance-list"></div>
+        </div>
+
+        <!-- Transfer form -->
+        <div class="card">
+          <h3>Send Circles</h3>
+
+          <label class="field-label" for="recipient-input">Recipient</label>
+          <div class="search-wrap">
+            <input id="recipient-input" type="text" autocomplete="off" spellcheck="false"
+                   placeholder="Search name, or paste an address" />
+            <div id="search-results" class="search-results" hidden></div>
+          </div>
+
+          <label class="field-label" for="amount-input">Amount (CRC)</label>
+          <input id="amount-input" type="number" min="0" step="any" placeholder="0.0" />
+
+          <button id="send-btn" class="primary-btn" disabled>Send Circles</button>
+          <div id="tx-status" class="tx-status"></div>
+        </div>
       </div>
-      <button id="logout-btn" class="ghost-btn">Log out</button>
     </section>
 
     <section class="log-section">
@@ -78,6 +107,6 @@
     </section>
   </main>
 
-  <script type="module" src="/main.js"></script>
+  <script type="module" src="./main.js"></script>
 </body>
 </html>
