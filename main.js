@@ -455,11 +455,15 @@ signBtn.addEventListener('click', async () => {
 });
 
 // ── Log out ───────────────────────────────────────────────────────────────────
+// Ask the connector to drop its session, then show the signed-out view. We do NOT
+// reload the iframe: reloading remounts the connector, which would auto-restore the
+// saved session and reconnect. The `disconnect` message makes the connector clear
+// its saved session and reply `wallet_disconnected`.
 $('logout-btn').addEventListener('click', () => {
   connectedAddress = null;
   renderSignedOut();
-  frame.src = frameSrc(connectorHost);
-  log('·', 'logged out (host-side) and reloaded connector');
+  postToFrame({ type: 'disconnect' });
+  log('·', 'logged out (sent disconnect to connector)');
 });
 
 $('clear-log').addEventListener('click', () => {
