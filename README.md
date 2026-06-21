@@ -1,11 +1,13 @@
-# crc-signin login demo
+# crc-signin sign-text demo
 
-A standalone third-party website ("Northwind") that logs users in by embedding the
-Circles **`/crc-signin`** connector in an `<iframe>`. The host site never touches the
-user's passkey or keys — it only receives the connected address over `postMessage`.
+A standalone third-party website ("Northwind") that connects users by embedding the
+Circles **`/crc-signin`** connector in an `<iframe>`, then asks the connector to
+**sign arbitrary text** (not a transaction). The host site never touches the user's
+passkey or keys — it only receives the connected address and the resulting signature
+over `postMessage`.
 
 This is a minimal, framework-free integration example: copy `index.html` + `main.js`
-into any site to add "Log in with Circles".
+into any site to add "Sign with Circles".
 
 ## Run
 
@@ -19,7 +21,7 @@ Open http://localhost:5183.
 The iframe defaults to the deployed connector (`https://circles-dev.gnosis.io/crc-signin`).
 Override it with `?host=...` or the on-page "Connector host" box.
 
-## Login flow
+## Connect flow
 
 1. The page embeds `<iframe src="https://<host>/crc-signin">` and grants WebAuthn via
    `allow="publickey-credentials-get *; publickey-credentials-create *"`.
@@ -32,30 +34,28 @@ Override it with `?host=...` or the on-page "Connector host" box.
 Wire format is identical to [`@aboutcircles/miniapp-sdk`](https://www.npmjs.com/package/@aboutcircles/miniapp-sdk),
 so no SDK dependency is required.
 
-## After login: profile + ERC-20 transfer
+## After connect: profile + sign text
 
-Once connected, the page demonstrates a full third-party integration:
+Once connected, the page demonstrates message signing:
 
 - **Profile** — loads the connected avatar's Circles profile via
-  `circles_getProfileByAddress`.
-- **ERC-20 balances** — lists the avatar's token balances via
-  `circles_getTokenBalances`, filtered to `isErc20 === true` (ERC-1155 raw Hub
-  tokens are excluded). Pick one to send.
-- **Recipient search** — type a name to search avatars via
-  `circles_searchProfiles` (returns address + avatarType), or paste a raw address.
-- **Transfer** — builds a plain ERC-20 `transfer(address,uint256)` calldata
-  (`circles.js`) and posts it to the connector as `send_transactions`. The
-  connector shows its approval popup and sends it via the user's Safe, then
-  replies `tx_success` / `tx_rejected`.
+  `circles_getProfileByAddress` (a public RPC read on this site).
+- **Sign** — the user types any text, picks a signature type, and clicks
+  **Sign message**. The page posts `{ type: 'sign_message', requestId, message,
+  signatureType }` to the connector. The connector prompts the passkey, signs via
+  the user's Safe, and replies `sign_success` with `{ signature, verified }` (or
+  `sign_rejected`). The signature is shown in the **Result** panel.
 
-All RPC reads (profile, search, balances) are **public** and happen directly on
-this site; only the transfer touches the wallet, and only through the iframe. A
-direct ERC-20 wrapper transfer bypasses the Hub, trust graph, and pathfinder — it
-is a standard token move.
+### Signature types
 
-> The connected account needs at least one **ERC-20 wrapped** Circles token with a
-> non-zero balance for the transfer to be possible. Wrap some Circles to ERC-20 in
-> the Circles app first if the list is empty.
+| Type | What the connector does | Verifiable on-chain |
+| --- | --- | --- |
+| `erc1271` (default) | Safe smart-account signature over `hashMessage(msg)` | ✅ via `isValidSignature` — `verified` is reported `true` |
+| `raw` | raw owner/passkey signature over the EIP-191 message hash | — |
+
+No transaction is sent and no gas is spent — signing happens entirely off-chain,
+inside the connector iframe. The only thing that touches the wallet is the
+`sign_message` step.
 
 RPC: `https://rpc.aboutcircles.com/`.
 

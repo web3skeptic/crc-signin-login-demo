@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Northwind — Login with Circles</title>
+  <title>Northwind — Sign with Circles</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -17,12 +17,13 @@
 
   <main class="wrap">
     <section class="intro">
-      <h1>Log in with your Circles account</h1>
+      <h1>Sign text with your Circles account</h1>
       <p>
-        This is a standalone website. To sign you in, it embeds the Circles
-        <code>/crc-signin</code> connector in an <code>&lt;iframe&gt;</code> and waits for it to
-        report a connected address over <code>postMessage</code>. Your passkey and keys never
-        leave the Circles iframe — this site only ever sees your address.
+        This is a standalone website. It embeds the Circles
+        <code>/crc-signin</code> connector in an <code>&lt;iframe&gt;</code>, waits for it to
+        report a connected address over <code>postMessage</code>, then asks it to
+        <strong>sign arbitrary text</strong> (not a transaction). Your passkey and keys never
+        leave the Circles iframe — this site only sees your address and the resulting signature.
       </p>
     </section>
 
@@ -57,7 +58,7 @@
       </div>
     </section>
 
-    <!-- Signed-in: profile + ERC-20 Circles transfer -->
+    <!-- Signed-in: profile + message signing -->
     <section id="signed-in" class="app" hidden>
       <header class="app-head">
         <div class="profile">
@@ -71,29 +72,42 @@
       </header>
 
       <div class="cols">
-        <!-- Token picker -->
+        <!-- Sign form -->
         <div class="card">
-          <h3>Your ERC-20 Circles</h3>
-          <p class="card-hint">Only ERC-20 wrapped Circles are listed. Pick one to send.</p>
-          <div id="balance-list" class="balance-list"></div>
-        </div>
+          <h3>Sign a message</h3>
+          <p class="card-hint">
+            Type any text and ask the Circles connector to sign it. The connector
+            prompts your passkey, signs with your Safe, and posts the signature back —
+            no transaction, no gas.
+          </p>
 
-        <!-- Transfer form -->
-        <div class="card">
-          <h3>Send Circles</h3>
+          <label class="field-label" for="message-input">Message</label>
+          <textarea id="message-input" rows="4" spellcheck="false"
+                    placeholder="Sign in to Northwind&#10;Nonce: 12345"></textarea>
 
-          <label class="field-label" for="recipient-input">Recipient</label>
-          <div class="search-wrap">
-            <input id="recipient-input" type="text" autocomplete="off" spellcheck="false"
-                   placeholder="Search name, or paste an address" />
-            <div id="search-results" class="search-results" hidden></div>
+          <label class="field-label">Signature type</label>
+          <div class="sig-type-row">
+            <label class="radio">
+              <input type="radio" name="sig-type" value="erc1271" checked />
+              <span><strong>erc1271</strong> — Safe smart-account signature (verifiable on-chain via <code>isValidSignature</code>)</span>
+            </label>
+            <label class="radio">
+              <input type="radio" name="sig-type" value="raw" />
+              <span><strong>raw</strong> — raw passkey/owner signature over the EIP-191 hash</span>
+            </label>
           </div>
 
-          <label class="field-label" for="amount-input">Amount (CRC)</label>
-          <input id="amount-input" type="number" min="0" step="any" placeholder="0.0" />
+          <button id="sign-btn" class="primary-btn" disabled>Sign message</button>
+          <div id="sign-status" class="tx-status"></div>
+        </div>
 
-          <button id="send-btn" class="primary-btn" disabled>Send Circles</button>
-          <div id="tx-status" class="tx-status"></div>
+        <!-- Result -->
+        <div class="card">
+          <h3>Result</h3>
+          <p class="card-hint">The signature returned by the connector for the last request.</p>
+          <div id="sign-result" class="sign-result">
+            <div class="muted-row">No signature yet — sign a message to see it here.</div>
+          </div>
         </div>
       </div>
     </section>
