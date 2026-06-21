@@ -33,7 +33,7 @@ import {
   getAddress,
 } from './circles.js';
 
-const DEFAULT_HOST = 'https://circles-dev.gnosis.io';
+const DEFAULT_HOST = 'https://circles.gnosis.io';
 const params = new URLSearchParams(location.search);
 let connectorHost = params.get('host') || localStorage.getItem('crc-login-host') || DEFAULT_HOST;
 
