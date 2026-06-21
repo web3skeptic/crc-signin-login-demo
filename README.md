@@ -35,13 +35,13 @@ collapse toggle). On phones it becomes a full-width bottom sheet.
 Wire format is identical to [`@aboutcircles/miniapp-sdk`](https://www.npmjs.com/package/@aboutcircles/miniapp-sdk),
 so no SDK dependency is required.
 
-## After login: profile + two modes
+## After login: profile + two actions
 
 Once connected, the page loads the avatar's Circles profile via
-`circles_getProfileByAddress`, then offers two modes (switchable with the tabs at
-the top of the signed-in view):
+`circles_getProfileByAddress`, then shows both actions at once in the signed-in
+view:
 
-### Mode 1 — Send a transaction (ERC-20 transfer)
+### Send a transaction (ERC-20 transfer)
 
 - **ERC-20 balances** — lists the avatar's token balances via
   `circles_getTokenBalances`, filtered to `isErc20 === true` (ERC-1155 raw Hub
@@ -62,7 +62,7 @@ is a standard token move.
 > non-zero balance for the transfer to be possible. Wrap some Circles to ERC-20 in
 > the Circles app first if the list is empty.
 
-### Mode 2 — Sign text (no transaction)
+### Sign text (no transaction)
 
 The user types any text, picks a signature type, and clicks **Sign message**. The
 page posts `{ type: 'sign_message', requestId, message, signatureType }` to the

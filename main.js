@@ -55,11 +55,7 @@ const amountInput = $('amount-input');
 const sendBtn = $('send-btn');
 const txStatus = $('tx-status');
 
-// Mode tabs + sign panel
-const modeTxBtn = $('mode-tx');
-const modeSignBtn = $('mode-sign');
-const panelTx = $('panel-tx');
-const panelSign = $('panel-sign');
+// Sign panel
 const messageInput = $('message-input');
 const signBtn = $('sign-btn');
 const signStatus = $('sign-status');
@@ -176,20 +172,6 @@ function renderSignedIn() {
   signedIn.hidden = false;
   updateSignState();
 }
-
-// ── Mode tabs: transfer a tx vs. sign text ──────────────────────────────────────
-function setMode(mode) {
-  const sign = mode === 'sign';
-  panelTx.hidden = sign;
-  panelSign.hidden = !sign;
-  modeTxBtn.classList.toggle('active', !sign);
-  modeSignBtn.classList.toggle('active', sign);
-  modeTxBtn.setAttribute('aria-selected', String(!sign));
-  modeSignBtn.setAttribute('aria-selected', String(sign));
-}
-
-modeTxBtn.addEventListener('click', () => setMode('tx'));
-modeSignBtn.addEventListener('click', () => setMode('sign'));
 
 function renderSignedOut() {
   signedOut.hidden = false;

@@ -526,36 +526,8 @@ code {
 .tx-status.error { color: var(--red); }
 .tx-status a { color: var(--accent-2); }
 
-/* ── Mode tabs (Send tx / Sign text) ─────────────────────────────────── */
-.mode-tabs {
-  display: inline-flex;
-  gap: 4px;
-  background: var(--panel-2);
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  padding: 4px;
-  margin-bottom: 18px;
-}
-
-.mode-tab {
-  border: none;
-  background: none;
-  color: var(--muted);
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 500;
-  padding: 7px 16px;
-  border-radius: 999px;
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-}
-
-.mode-tab:hover { color: var(--ink); }
-
-.mode-tab.active {
-  background: linear-gradient(130deg, var(--accent), var(--accent-2));
-  color: #fff;
-}
+/* Stack the transaction and sign-text panels with spacing between them. */
+#panel-sign { margin-top: 18px; }
 
 /* Signature type radios */
 .sig-type-row { display: flex; flex-direction: column; gap: 10px; }

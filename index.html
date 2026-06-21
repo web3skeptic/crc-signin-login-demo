@@ -62,13 +62,7 @@
         <button id="logout-btn" class="ghost-btn">Log out</button>
       </header>
 
-      <!-- Mode switch: transfer a tx vs. sign text -->
-      <div class="mode-tabs" role="tablist">
-        <button id="mode-tx" class="mode-tab active" role="tab" aria-selected="true">Send a transaction</button>
-        <button id="mode-sign" class="mode-tab" role="tab" aria-selected="false">Sign text</button>
-      </div>
-
-      <!-- Mode: transaction transfer -->
+      <!-- Transaction transfer -->
       <div id="panel-tx" class="cols">
         <!-- Token picker -->
         <div class="card">
@@ -96,8 +90,8 @@
         </div>
       </div>
 
-      <!-- Mode: sign arbitrary text (no transaction) -->
-      <div id="panel-sign" class="cols" hidden>
+      <!-- Sign arbitrary text (no transaction) -->
+      <div id="panel-sign" class="cols">
         <!-- Sign form -->
         <div class="card">
           <h3>Sign a message</h3>
