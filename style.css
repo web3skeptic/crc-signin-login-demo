@@ -303,35 +303,7 @@ code {
 
 .muted-row { color: var(--muted); font-size: 13px; padding: 8px 2px; }
 
-/* Token list */
-.balance-list { display: flex; flex-direction: column; gap: 8px; max-height: 320px; overflow-y: auto; }
-
-.token-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  width: 100%;
-  text-align: left;
-  background: var(--panel-2);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 10px 12px;
-  color: var(--ink);
-  font-family: inherit;
-  cursor: pointer;
-  transition: border-color 0.15s, background 0.15s;
-}
-
-.token-row:hover { border-color: var(--accent); }
-.token-row.selected { border-color: var(--accent); background: rgba(91, 140, 255, 0.12); }
-
-.token-main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.token-amt { font-weight: 600; font-size: 14px; }
-.token-meta { font-size: 11.5px; color: var(--muted); }
-.token-addr { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); flex: none; }
-
-/* Transfer form */
+/* Sign form */
 .field-label {
   display: block;
   font-size: 12px;
@@ -342,7 +314,8 @@ code {
 }
 
 .card input[type="text"],
-.card input[type="number"] {
+.card input[type="number"],
+.card textarea {
   width: 100%;
   background: var(--panel-2);
   border: 1px solid var(--line);
@@ -353,7 +326,30 @@ code {
   padding: 10px 12px;
 }
 
-.card input:focus { outline: none; border-color: var(--accent); }
+.card textarea {
+  resize: vertical;
+  min-height: 88px;
+  line-height: 1.5;
+}
+
+.card input:focus,
+.card textarea:focus { outline: none; border-color: var(--accent); }
+
+/* Signature type radios */
+.sig-type-row { display: flex; flex-direction: column; gap: 10px; }
+
+.radio {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.radio input[type="radio"] { margin-top: 2px; flex: none; accent-color: var(--accent); }
+.radio strong { color: var(--ink); }
 
 .search-wrap { position: relative; }
 
@@ -438,3 +434,59 @@ code {
 .tx-status.success { color: var(--green); }
 .tx-status.error { color: var(--red); }
 .tx-status a { color: var(--accent-2); }
+
+/* Sign result */
+.sign-result { font-size: 13px; }
+
+.result-grid {
+  display: grid;
+  grid-template-columns: 78px 1fr;
+  gap: 8px 12px;
+  margin: 0;
+}
+
+.result-grid dt {
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 11px;
+  padding-top: 2px;
+}
+
+.result-grid dd { margin: 0; min-width: 0; }
+
+.result-grid code {
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  display: inline-block;
+  max-width: 100%;
+  word-break: break-all;
+  padding: 3px 7px;
+}
+
+.result-sig { font-size: 11.5px; }
+
+.result-msg {
+  margin: 0;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: #c4cdec;
+}
+
+.verified-badge {
+  display: inline-block;
+  font-size: 11px;
+  border-radius: 999px;
+  padding: 1px 8px;
+  margin-left: 4px;
+}
+
+.verified-badge.ok { color: #04230f; background: var(--green); }
+.verified-badge.no { color: #2a0b0b; background: var(--red); }
