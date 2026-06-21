@@ -22,7 +22,8 @@
         This is a standalone website. To sign you in, it embeds the Circles
         <code>/crc-signin</code> connector in an <code>&lt;iframe&gt;</code> and waits for it to
         report a connected address over <code>postMessage</code>. Your passkey and keys never
-        leave the Circles iframe — this site only ever sees your address.
+        leave the Circles iframe — this site only ever sees your address. Once connected
+        you can <strong>send a Circles transaction</strong> or <strong>sign arbitrary text</strong>.
       </p>
     </section>
 
@@ -70,7 +71,14 @@
         <button id="logout-btn" class="ghost-btn">Log out</button>
       </header>
 
-      <div class="cols">
+      <!-- Mode switch: transfer a tx vs. sign text -->
+      <div class="mode-tabs" role="tablist">
+        <button id="mode-tx" class="mode-tab active" role="tab" aria-selected="true">Send a transaction</button>
+        <button id="mode-sign" class="mode-tab" role="tab" aria-selected="false">Sign text</button>
+      </div>
+
+      <!-- Mode: transaction transfer -->
+      <div id="panel-tx" class="cols">
         <!-- Token picker -->
         <div class="card">
           <h3>Your ERC-20 Circles</h3>
@@ -94,6 +102,46 @@
 
           <button id="send-btn" class="primary-btn" disabled>Send Circles</button>
           <div id="tx-status" class="tx-status"></div>
+        </div>
+      </div>
+
+      <!-- Mode: sign arbitrary text (no transaction) -->
+      <div id="panel-sign" class="cols" hidden>
+        <!-- Sign form -->
+        <div class="card">
+          <h3>Sign a message</h3>
+          <p class="card-hint">
+            Type any text and ask the connector to sign it — it prompts your passkey
+            and signs with your Safe. No transaction, no gas.
+          </p>
+
+          <label class="field-label" for="message-input">Message</label>
+          <textarea id="message-input" rows="4" spellcheck="false"
+                    placeholder="Sign in to Northwind&#10;Nonce: 12345"></textarea>
+
+          <label class="field-label">Signature type</label>
+          <div class="sig-type-row">
+            <label class="radio">
+              <input type="radio" name="sig-type" value="erc1271" checked />
+              <span><strong>erc1271</strong> — Safe smart-account signature, verifiable on-chain via <code>isValidSignature</code></span>
+            </label>
+            <label class="radio">
+              <input type="radio" name="sig-type" value="raw" />
+              <span><strong>raw</strong> — raw owner/passkey signature over the EIP-191 hash</span>
+            </label>
+          </div>
+
+          <button id="sign-btn" class="primary-btn" disabled>Sign message</button>
+          <div id="sign-status" class="tx-status"></div>
+        </div>
+
+        <!-- Result -->
+        <div class="card">
+          <h3>Result</h3>
+          <p class="card-hint">The signature returned by the connector for the last request.</p>
+          <div id="sign-result" class="sign-result">
+            <div class="muted-row">No signature yet — sign a message to see it here.</div>
+          </div>
         </div>
       </div>
     </section>

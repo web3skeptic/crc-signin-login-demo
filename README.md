@@ -32,12 +32,14 @@ Override it with `?host=...` or the on-page "Connector host" box.
 Wire format is identical to [`@aboutcircles/miniapp-sdk`](https://www.npmjs.com/package/@aboutcircles/miniapp-sdk),
 so no SDK dependency is required.
 
-## After login: profile + ERC-20 transfer
+## After login: profile + two modes
 
-Once connected, the page demonstrates a full third-party integration:
+Once connected, the page loads the avatar's Circles profile via
+`circles_getProfileByAddress`, then offers two modes (switchable with the tabs at
+the top of the signed-in view):
 
-- **Profile** — loads the connected avatar's Circles profile via
-  `circles_getProfileByAddress`.
+### Mode 1 — Send a transaction (ERC-20 transfer)
+
 - **ERC-20 balances** — lists the avatar's token balances via
   `circles_getTokenBalances`, filtered to `isErc20 === true` (ERC-1155 raw Hub
   tokens are excluded). Pick one to send.
@@ -56,6 +58,19 @@ is a standard token move.
 > The connected account needs at least one **ERC-20 wrapped** Circles token with a
 > non-zero balance for the transfer to be possible. Wrap some Circles to ERC-20 in
 > the Circles app first if the list is empty.
+
+### Mode 2 — Sign text (no transaction)
+
+The user types any text, picks a signature type, and clicks **Sign message**. The
+page posts `{ type: 'sign_message', requestId, message, signatureType }` to the
+connector, which prompts the passkey, signs via the user's Safe, and replies
+`sign_success` with `{ signature, verified }` (or `sign_rejected`). Nothing is
+sent on-chain and no gas is spent — the only wallet interaction is the signature.
+
+| Type | What the connector does | Verifiable on-chain |
+| --- | --- | --- |
+| `erc1271` (default) | Safe smart-account signature over `hashMessage(msg)` | ✅ via `isValidSignature` — `verified` is reported `true` |
+| `raw` | raw owner/passkey signature over the EIP-191 message hash | — |
 
 RPC: `https://rpc.aboutcircles.com/`.
 
