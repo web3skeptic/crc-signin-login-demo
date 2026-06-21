@@ -16,8 +16,11 @@ npm run dev
 
 Open http://localhost:5183.
 
-The iframe defaults to the deployed connector (`https://circles-dev.gnosis.io/crc-signin`).
+The iframe defaults to the deployed connector (`https://circles.gnosis.io/crc-signin`).
 Override it with `?host=...` or the on-page "Connector host" box.
+
+The connector renders in a docked panel pinned to the right edge of the page (with a
+collapse toggle). On phones it becomes a full-width bottom sheet.
 
 ## Login flow
 

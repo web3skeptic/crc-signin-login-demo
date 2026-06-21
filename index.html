@@ -27,12 +27,12 @@
       </p>
     </section>
 
-    <!-- Signed-out: show the embedded Circles login connector -->
+    <!-- Signed-out: just the copy. The connector lives in the docked panel on the right. -->
     <section id="signed-out" class="login-card">
       <div class="login-copy">
         <h2>Sign in</h2>
-        <p>Use the Circles connector on the right. Click <strong>Log in</strong> to authenticate
-          with your device passkey, or <strong>Create account</strong> if you're new.</p>
+        <p>Use the Circles connector in the panel on the right. Click <strong>Log in</strong> to
+          authenticate with your device passkey, or <strong>Create account</strong> if you're new.</p>
         <ul class="hint-list">
           <li>The connector must be served from a <code>*.gnosis.io</code> host for an existing
             passkey to be found (passkeys are bound to the <code>gnosis.io</code> domain).</li>
@@ -46,15 +46,6 @@
           <input id="host-input" type="text" spellcheck="false" />
           <button id="host-apply" class="ghost-btn">Reload</button>
         </div>
-      </div>
-
-      <div class="frame-col">
-        <div class="frame-label">Circles login (iframe)</div>
-        <iframe
-          id="crc-frame"
-          title="Log in with Circles"
-          allow="publickey-credentials-get *; publickey-credentials-create *; clipboard-write"
-        ></iframe>
       </div>
     </section>
 
@@ -154,6 +145,25 @@
       <pre id="log"></pre>
     </section>
   </main>
+
+  <!-- Docked connector panel: fixed on the right (desktop), bottom sheet on phones -->
+  <aside id="connector-dock" class="dock">
+    <div class="dock-head">
+      <span class="dock-title">
+        <span class="dock-dot"></span>
+        Circles connector
+      </span>
+      <button id="dock-toggle" class="dock-toggle" aria-expanded="true" aria-controls="dock-body"
+              title="Hide / show">–</button>
+    </div>
+    <div id="dock-body" class="dock-body">
+      <iframe
+        id="crc-frame"
+        title="Log in with Circles"
+        allow="publickey-credentials-get *; publickey-credentials-create *; clipboard-write"
+      ></iframe>
+    </div>
+  </aside>
 
   <script type="module" src="./main.js"></script>
 </body>

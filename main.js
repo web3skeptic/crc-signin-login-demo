@@ -470,6 +470,15 @@ $('clear-log').addEventListener('click', () => {
   logEl.textContent = '';
 });
 
+// ── Connector dock collapse/expand ───────────────────────────────────────────────
+const dock = $('connector-dock');
+$('dock-toggle').addEventListener('click', () => {
+  const collapsed = dock.classList.toggle('collapsed');
+  const btn = $('dock-toggle');
+  btn.textContent = collapsed ? '+' : '–';
+  btn.setAttribute('aria-expanded', String(!collapsed));
+});
+
 // ── Host picker ─────────────────────────────────────────────────────────────────
 function applyHost(host) {
   connectorHost = host.replace(/\/$/, '');
