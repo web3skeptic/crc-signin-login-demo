@@ -55,6 +55,16 @@ const amountInput = $('amount-input');
 const sendBtn = $('send-btn');
 const txStatus = $('tx-status');
 
+// Mode tabs + sign panel
+const modeTxBtn = $('mode-tx');
+const modeSignBtn = $('mode-sign');
+const panelTx = $('panel-tx');
+const panelSign = $('panel-sign');
+const messageInput = $('message-input');
+const signBtn = $('sign-btn');
+const signStatus = $('sign-status');
+const signResult = $('sign-result');
+
 // ── State ─────────────────────────────────────────────────────────────────────
 let connectedAddress = null;
 let erc20Rows = [];           // ERC-20 balance rows for the connected avatar
@@ -63,6 +73,8 @@ let selectedRecipient = null; // { address, name }
 let txReqCounter = 0;
 const pendingTx = {};         // requestId -> { resolve, reject }
 let searchTimer = null;
+let signReqCounter = 0;
+const pendingSign = {};        // requestId -> { resolve, reject }
 
 // ── Logging ────────────────────────────────────────────────────────────────────
 function log(dir, msg) {
@@ -96,6 +108,15 @@ function requestTransactions(transactions) {
     const requestId = 'tx_' + ++txReqCounter;
     pendingTx[requestId] = { resolve, reject };
     postToFrame({ type: 'send_transactions', requestId, transactions });
+  });
+}
+
+// ── Ask the connector to sign arbitrary text and await its result ───────────────
+function requestSignature(message, signatureType) {
+  return new Promise((resolve, reject) => {
+    const requestId = 'sign_' + ++signReqCounter;
+    pendingSign[requestId] = { resolve, reject };
+    postToFrame({ type: 'sign_message', requestId, message, signatureType });
   });
 }
 
@@ -134,6 +155,18 @@ window.addEventListener('message', (event) => {
       pendingTx[d.requestId]?.reject(new Error(d.reason ?? d.error ?? 'Rejected'));
       delete pendingTx[d.requestId];
       break;
+
+    case 'sign_success':
+      log('in', `sign_success: verified=${d.verified} sig=${shortAddr(d.signature)}`);
+      pendingSign[d.requestId]?.resolve({ signature: d.signature, verified: d.verified });
+      delete pendingSign[d.requestId];
+      break;
+
+    case 'sign_rejected':
+      log('in', `sign_rejected: ${d.reason ?? d.error}`);
+      pendingSign[d.requestId]?.reject(new Error(d.reason ?? d.error ?? 'Rejected'));
+      delete pendingSign[d.requestId];
+      break;
   }
 });
 
@@ -141,7 +174,22 @@ window.addEventListener('message', (event) => {
 function renderSignedIn() {
   signedOut.hidden = true;
   signedIn.hidden = false;
+  updateSignState();
 }
+
+// ── Mode tabs: transfer a tx vs. sign text ──────────────────────────────────────
+function setMode(mode) {
+  const sign = mode === 'sign';
+  panelTx.hidden = sign;
+  panelSign.hidden = !sign;
+  modeTxBtn.classList.toggle('active', !sign);
+  modeSignBtn.classList.toggle('active', sign);
+  modeTxBtn.setAttribute('aria-selected', String(!sign));
+  modeSignBtn.setAttribute('aria-selected', String(sign));
+}
+
+modeTxBtn.addEventListener('click', () => setMode('tx'));
+modeSignBtn.addEventListener('click', () => setMode('sign'));
 
 function renderSignedOut() {
   signedOut.hidden = false;
@@ -346,6 +394,63 @@ sendBtn.addEventListener('click', async () => {
   } finally {
     sendBtn.textContent = 'Send Circles';
     updateSendState();
+  }
+});
+
+// ── Sign text ───────────────────────────────────────────────────────────────────
+function selectedSigType() {
+  return document.querySelector('input[name="sig-type"]:checked')?.value || 'erc1271';
+}
+
+function updateSignState() {
+  signBtn.disabled = !connectedAddress || !messageInput.value.trim();
+}
+
+messageInput.addEventListener('input', updateSignState);
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, (c) =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+function renderSignResult({ message, signatureType, signature, verified }) {
+  const verifiedBadge =
+    verified === true
+      ? '<span class="verified-badge ok">verified ✓</span>'
+      : verified === false
+        ? '<span class="verified-badge no">not verified</span>'
+        : '';
+  signResult.innerHTML = `
+    <dl class="result-grid">
+      <dt>Type</dt><dd><code>${escapeHtml(signatureType)}</code> ${verifiedBadge}</dd>
+      <dt>Signer</dt><dd><code>${escapeHtml(connectedAddress)}</code></dd>
+      <dt>Message</dt><dd><pre class="result-msg">${escapeHtml(message)}</pre></dd>
+      <dt>Signature</dt><dd><code class="result-sig">${escapeHtml(signature)}</code></dd>
+    </dl>`;
+}
+
+signBtn.addEventListener('click', async () => {
+  const message = messageInput.value;
+  if (!message.trim() || !connectedAddress) return;
+  const signatureType = selectedSigType();
+
+  signStatus.textContent = '';
+  signStatus.className = 'tx-status';
+
+  signBtn.disabled = true;
+  signBtn.textContent = 'Confirm in the Circles popup…';
+  signStatus.textContent = 'Waiting for passkey approval in the connector…';
+  try {
+    const { signature, verified } = await requestSignature(message, signatureType);
+    renderSignResult({ message, signatureType, signature, verified });
+    signStatus.textContent = 'Signed!';
+    signStatus.classList.add('success');
+  } catch (e) {
+    signStatus.textContent = `Signing failed: ${e.message}`;
+    signStatus.classList.add('error');
+  } finally {
+    signBtn.textContent = 'Sign message';
+    updateSignState();
   }
 });
 
